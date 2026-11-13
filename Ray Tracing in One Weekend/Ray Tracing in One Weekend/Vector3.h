@@ -84,7 +84,7 @@ vec3 operator*(float t, const vec3& v)
 }
 vec3 operator/(const vec3& v, float t)
 {
-	return vec3(t / v.e[0], t / v.e[1], t / v.e[2]);
+	return vec3(v.e[0] / t, v.e[1] / t, v.e[2] / t);
 }
 vec3 operator*(const vec3& v, float t)
 {
@@ -149,9 +149,9 @@ vec3& vec3::operator/=(const float t)
 {
 	float k = 1.0f / t;
 
-	e[0] /= k;
-	e[1] /= k;
-	e[2] /= k;
+	e[0] *= k;
+	e[1] *= k;
+	e[2] *= k;
 	return *this;
 }
 
