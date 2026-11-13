@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <iostream>
 #include <fstream>
+#include "Vector3.h"
 
 int main() {
 	int nx = 200;
@@ -11,13 +12,11 @@ int main() {
 
 	for (int j = ny - 1; j >= 0; j--) {
 		for (int i = 0; i < nx; i++) {
-			float r = float(i) / float(nx);
-			float g = float(j) / float(ny);
-			float b = 0.2f;
+			vec3 color(float(i) / float(nx), float(j) / float(ny), 0.2);
 
-			int ir = int(255.99 * r);
-			int ig = int(255.99 * g);
-			int ib = int(255.99 * b);
+			int ir = int(255.99 * color[0]);
+			int ig = int(255.99 * color[1]);
+			int ib = int(255.99 * color[2]);
 			out << ir << " " << ig << " " << ib << "\n";
 		}
 	}
