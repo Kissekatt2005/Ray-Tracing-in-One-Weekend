@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Ray Tracing in One Weekend/Ray Tracing in One Weekend.vcxproj" Id="26e5759b-6efc-4a45-966d-850695931ac3" />
+</Solution>
