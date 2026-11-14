@@ -96,8 +96,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Hitable.h" />
+    <ClInclude Include="Hitable_list.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
