@@ -46,13 +46,13 @@ int main() {
 
 	constexpr int list_size = 5;
 	hitable* list[list_size];
-	list[0] = new sphere(vec3(0.f, 0.f, -1.f), 0.5f, new lambertian(vec3(0.8f,0.3f,0.3f)));
-	list[1] = new sphere(vec3(0.f, -100.5f, -1.f), 100.f, new lambertian(vec3(0.8f,0.8f,0.0f)));
-	list[2] = new sphere(vec3(1.f, 0.f, -1.f), 0.5f, new metal(vec3(0.8f,0.6f,0.2f), 0.3f));
+	list[0] = new sphere(vec3(0.f, 0.f, -1.f), 0.5f, new lambertian(vec3(0.1f, 0.2f, 0.5f)));
+	list[1] = new sphere(vec3(0.f, -100.5f, -1.f), 100.f, new lambertian(vec3(0.8f, 0.8f, 0.0f)));
+	list[2] = new sphere(vec3(1.f, 0.f, -1.f), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.3f));
 	list[3] = new sphere(vec3(-1.f, 0.f, -1.f), 0.5f, new dielectric(1.5f));
 	list[4] = new sphere(vec3(-1.f, 0.f, -1.f), -0.45f, new dielectric(1.5f));
 	hitable* world = new hitable_list(list, list_size);
-	camera cam;
+	camera cam(vec3(-2.f,2.f,1.f), vec3(0.f,0.f,-1.f),vec3(0.f,1.f,0.f), 30.f, static_cast<float>(nx) / static_cast<float>(ny));
 	random rand;
 
 	for (int j = ny - 1; j >= 0; j--) {
