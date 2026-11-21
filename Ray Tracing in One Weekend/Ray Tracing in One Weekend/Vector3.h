@@ -40,7 +40,11 @@ public:
 
 
 vec3::vec3()
-{}
+{
+	e[0] = 0;
+	e[1] = 0;
+	e[2] = 0;
+}
 
 
 std::istream& operator>>(std::istream& is, vec3& t)
