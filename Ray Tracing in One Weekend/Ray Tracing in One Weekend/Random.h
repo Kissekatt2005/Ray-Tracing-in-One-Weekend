@@ -2,6 +2,8 @@
 #include<random>
 #include "Vector3.h"
 
+class hitable;
+
 class random
 {
 public:
@@ -20,5 +22,16 @@ public:
 		} while (p.squared_lenght() >= 1.0);
 		return p;
 	}
+
+	inline vec3 random_in_unit_dink()
+	{
+		vec3 p;
+		do {
+			p = 2.f * vec3(random_float(), random_float(), 0) - vec3(1.f, 1.f, 0.f);
+		} while (dot(p, p) >= 1.f);
+		return p;
+	}
+
+	
 };
 

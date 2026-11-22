@@ -1,7 +1,7 @@
 #pragma once
-#include "Hitable.h"
 #include "Random.h"
-#include <math.h>
+#include "Hitable.h"
+#include <cmath>
 
 class material
 {

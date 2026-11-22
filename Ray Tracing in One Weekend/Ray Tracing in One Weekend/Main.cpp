@@ -8,7 +8,45 @@
 #include"float.h"
 #include "Material.h"
 
+hitable* random_scene()
+{
+	random rand;
+	int n = 500;
+	hitable** list = new hitable * [n + 1];
+	list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5f, 0.5f, 0.5f)));
+	int i = 1;
+	for (int a = -11; a < 11; a++)
+	{
+		for (int b = -11; b < 11; b++)
+		{
+			float choose_mat =rand. random_float();
+			vec3 center(a + 0.9f * rand.random_float(), 0.2f, b + 0.9f * rand.random_float());
+			if ((center - vec3(4.f, 0.2f, 0.f)).lenght() > 0.9f)
+			{
+				if (choose_mat < 0.8f)
+				{
+					list[i++] = new sphere(center, 0.2, new lambertian(vec3(rand.random_float() * rand.random_float(), rand.random_float() * rand.random_float(), rand.random_float() * rand.random_float())));
+				}
+				else if (choose_mat < 0.95f)
+				{
+					list[i++] = new sphere(center, 0.2f,
+						new metal(vec3(0.5f * (1 + rand.random_float()), 0.5f * (1 + rand.random_float()), 0.5f * (1 + rand.random_float())), 0.5f * rand.random_float()));
+				}
+				else
+				{
+					list[i++] = new sphere(center, 0.2f, new dielectric(1.5f));
+				}
+			}
 
+		}
+	}
+
+	list[i++] = new sphere(vec3(0.f, 1.f, 0.f), 1.f, new dielectric(1.5f));
+	list[i++] = new sphere(vec3(-4.f, 1.f, 0.f), 1.f, new lambertian(vec3(0.4f, 0.2f, 0.1f)));
+	list[i++] = new sphere(vec3(4.f, 1.f, 0.f), 1.f, new metal(vec3(0.7f, 0.6f, 0.5f), 0.0f));
+
+	return new hitable_list(list, i);
+}
 
 vec3 color(const ray& r, hitable* world, int depth)
 {
@@ -44,15 +82,15 @@ int main() {
 	std::ofstream out("image.ppm");
 	out << "P3\n" << nx << " " << ny << "\n255\n";
 
-	constexpr int list_size = 5;
-	hitable* list[list_size];
-	list[0] = new sphere(vec3(0.f, 0.f, -1.f), 0.5f, new lambertian(vec3(0.1f, 0.2f, 0.5f)));
-	list[1] = new sphere(vec3(0.f, -100.5f, -1.f), 100.f, new lambertian(vec3(0.8f, 0.8f, 0.0f)));
-	list[2] = new sphere(vec3(1.f, 0.f, -1.f), 0.5f, new metal(vec3(0.8f, 0.6f, 0.2f), 0.3f));
-	list[3] = new sphere(vec3(-1.f, 0.f, -1.f), 0.5f, new dielectric(1.5f));
-	list[4] = new sphere(vec3(-1.f, 0.f, -1.f), -0.45f, new dielectric(1.5f));
-	hitable* world = new hitable_list(list, list_size);
-	camera cam(vec3(-2.f,2.f,1.f), vec3(0.f,0.f,-1.f),vec3(0.f,1.f,0.f), 30.f, static_cast<float>(nx) / static_cast<float>(ny));
+	
+	hitable* world = random_scene();
+	vec3 lookfrom(13.0f, 2.0f, 3.0f);
+	vec3 lookat(0.0f, 0.0f, 0.0f);
+	float dist_to_focus = 10.0f;
+	float aperture = 0.1f;
+
+	camera cam(lookfrom, lookat, vec3(0.0f, 1.0f, 0.0f), 20.0f,
+		float(nx) / float(ny), aperture, dist_to_focus);
 	random rand;
 
 	for (int j = ny - 1; j >= 0; j--) {

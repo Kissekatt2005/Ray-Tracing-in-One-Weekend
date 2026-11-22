@@ -2,6 +2,7 @@
 #ifndef SPHEREH 
 #define SPHEREH
 #include "Hitable.h"
+#include "Sphere.h"
 
 class sphere :public hitable
 {
