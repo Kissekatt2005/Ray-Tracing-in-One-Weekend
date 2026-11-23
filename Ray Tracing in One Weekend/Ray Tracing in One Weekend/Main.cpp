@@ -7,6 +7,7 @@
 #include"Camera.h"
 #include"float.h"
 #include "Material.h"
+#include <chrono>
 
 hitable* random_scene()
 {
@@ -19,7 +20,7 @@ hitable* random_scene()
 	{
 		for (int b = -11; b < 11; b++)
 		{
-			float choose_mat =rand. random_float();
+			float choose_mat = rand.random_float();
 			vec3 center(a + 0.9f * rand.random_float(), 0.2f, b + 0.9f * rand.random_float());
 			if ((center - vec3(4.f, 0.2f, 0.f)).lenght() > 0.9f)
 			{
@@ -75,19 +76,20 @@ vec3 color(const ray& r, hitable* world, int depth)
 
 
 int main() {
-	int nx = 200;
-	int ny = 100;
-	int ns = 100;
+	auto start = std::chrono::steady_clock::now();
+	constexpr int nx = 800;
+	constexpr int ny = 400;
+	constexpr int ns = 100;
 
 	std::ofstream out("image.ppm");
 	out << "P3\n" << nx << " " << ny << "\n255\n";
 
-	
+
 	hitable* world = random_scene();
 	vec3 lookfrom(13.0f, 2.0f, 3.0f);
 	vec3 lookat(0.0f, 0.0f, 0.0f);
-	float dist_to_focus = 10.0f;
-	float aperture = 0.1f;
+	constexpr float dist_to_focus = 10.0f;
+	constexpr float aperture = 0.1f;
 
 	camera cam(lookfrom, lookat, vec3(0.0f, 1.0f, 0.0f), 20.0f,
 		float(nx) / float(ny), aperture, dist_to_focus);
@@ -116,5 +118,12 @@ int main() {
 	}
 
 	out.close();
+
+	auto end = std::chrono::steady_clock::now();
+	double seconds = std::chrono::duration<double>(end - start).count();
+
+	int minutes = int(seconds) / 60;
+	std::cout << "Render time: " << minutes << " min "
+		<< (seconds - minutes * 60) << " s\n";
 	return 0;
 }
