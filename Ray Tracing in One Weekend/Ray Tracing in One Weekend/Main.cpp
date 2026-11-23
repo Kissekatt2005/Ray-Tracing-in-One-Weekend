@@ -8,6 +8,16 @@
 #include"float.h"
 #include "Material.h"
 #include <chrono>
+#include <thread>
+#include <array>
+#include<vector>
+
+constexpr int nx = 800;
+constexpr int ny = 400;
+constexpr int ns = 100;
+
+using Image = std::array<vec3, nx* ny>;   // image[row][column]
+static Image image;
 
 hitable* random_scene()
 {
@@ -26,7 +36,7 @@ hitable* random_scene()
 			{
 				if (choose_mat < 0.8f)
 				{
-					list[i++] = new sphere(center, 0.2, new lambertian(vec3(rand.random_float() * rand.random_float(), rand.random_float() * rand.random_float(), rand.random_float() * rand.random_float())));
+					list[i++] = new sphere(center, 0.2f, new lambertian(vec3(rand.random_float() * rand.random_float(), rand.random_float() * rand.random_float(), rand.random_float() * rand.random_float())));
 				}
 				else if (choose_mat < 0.95f)
 				{
@@ -74,12 +84,38 @@ vec3 color(const ray& r, hitable* world, int depth)
 
 }
 
+void compute(const int id, const int thredCount, hitable*& in_world, const camera& cam, Image& img)
+{
+	random rand;
+	camera camera = cam;
+	//hitable* world = in_world;
+	int loop_zize = (nx * ny) / thredCount;
+	int start_index = loop_zize * id;
+
+	for (int j = start_index + loop_zize - 1; j >= start_index; j--) {
+		int x = j % nx;
+		int y = j / nx;
+
+		vec3 col = vec3(0, 0, 0);
+		for (int s = 0; s < ns; s++)
+		{
+			float u = float(x + rand.random_float()) / float(nx);
+			float v = 1.0f - (float(y + rand.random_float()) / float(ny));
+			ray r = camera.get_rey(u, v);
+			vec3 p = r.point_at_parameter(2.0);
+			col += color(r, in_world, 0);
+		}
+
+		col /= float(ns);
+		col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+
+		img[j] = col;
+
+	}
+}
 
 int main() {
 	auto start = std::chrono::steady_clock::now();
-	constexpr int nx = 800;
-	constexpr int ny = 400;
-	constexpr int ns = 100;
 
 	std::ofstream out("image.ppm");
 	out << "P3\n" << nx << " " << ny << "\n255\n";
@@ -90,31 +126,28 @@ int main() {
 	vec3 lookat(0.0f, 0.0f, 0.0f);
 	constexpr float dist_to_focus = 10.0f;
 	constexpr float aperture = 0.1f;
-
 	camera cam(lookfrom, lookat, vec3(0.0f, 1.0f, 0.0f), 20.0f,
 		float(nx) / float(ny), aperture, dist_to_focus);
-	random rand;
 
-	for (int j = ny - 1; j >= 0; j--) {
-		for (int i = 0; i < nx; i++) {
-			vec3 col = vec3(0, 0, 0);
-			for (int s = 0; s < ns; s++)
-			{
-				float u = float(i + rand.random_float()) / float(nx);
-				float v = float(j + rand.random_float()) / float(ny);
-				ray r = cam.get_rey(u, v);
-				vec3 p = r.point_at_parameter(2.0);
-				col += color(r, world, 0);
-			}
+	int threadCount = std::thread::hardware_concurrency();
+	if (threadCount == 0) threadCount = 4;
 
-			col /= float(ns);
-			col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
-			int ir = int(255.99 * col[0]);
-			int ig = int(255.99 * col[1]);
-			int ib = int(255.99 * col[2]);
+	std::vector<std::jthread> threads;
+	for (int t = 0; t < threadCount; t++)
+		threads.emplace_back(compute, t, threadCount, std::ref(world), std::cref(cam), std::ref(image));
 
-			out << ir << " " << ig << " " << ib << "\n";
-		}
+
+	// Wait for all threads to finish
+	for (auto& thread : threads)
+	{
+		thread.join();
+	}
+
+	for (size_t i = 0; i < image.size(); i++)
+	{
+		out << int(255.99f * image[i].x()) << " "
+			<< int(255.99f * image[i].y()) << " "
+			<< int(255.99f * image[i].z()) << "\n";
 	}
 
 	out.close();
